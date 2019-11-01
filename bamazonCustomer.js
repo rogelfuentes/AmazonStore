@@ -1,5 +1,5 @@
 var mysql = require("mysql");
-var inquirer = inquire("inquirer");
+var inquirer = require("inquirer");
 
 var connection = mysql.createConnection({
     host: "localhost",
@@ -12,9 +12,29 @@ var connection = mysql.createConnection({
 connection.connect(function (err) {
     if (err) throw err;
     console.log("connected as id " + connection.threadId);
-    amazonDataBase();
+    purchase();
 });
 
+
+function purchase() {
+    inquirer
+        .prompt({
+            name: "find",
+            type: "list",
+            message: "Main Menu:",
+            choices: ['Look the Items', 'Place an Order', 'Track ypour Order']
+        })
+        .then(function (answer) {
+
+            if (answer.find === 'Look the Items') {
+                amazonDataBase();
+            } else if (answer.postOrBid === "BID") {
+                bidAuction();
+            } else {
+                connection.end();
+            }
+        });
+}
 function amazonDataBase() {
     connection.query("SELECT * FROM products", function (err, res) {
         console.log("------------------------------------------------------");
@@ -31,23 +51,6 @@ function amazonDataBase() {
         }
         console.log("------------------------------------------------------");
         purchase();
-    });
-}
-function purchase() {
-    inquirer
-        .prompt({
-            name: "find",
-            type: "list",
-            message: "What Item do you want to purchase?",
-            choices: ['1', '2', '3', '4']
-        })
-        .then(function (answer) {
 
-            if (answer.find === 'By Artist') {
-                console.log('searching by artist...');
-                byArtist();
-            } else {
-                connection.end();
-            }
-        });
+    });
 }
