@@ -12,25 +12,27 @@ var connection = mysql.createConnection({
 connection.connect(function (err) {
     if (err) throw err;
     console.log("connected as id " + connection.threadId);
-    purchase();
+    menu();
 });
 
 
-function purchase() {
+function menu() {
     inquirer
         .prompt({
-            name: "find",
+            name: "menu",
             type: "list",
-            message: "Main Menu:",
-            choices: ['Look the Items', 'Place an Order', 'Track ypour Order']
+            message: "Main Menu",
+            choices: ['Look the Items', 'Place an Order', 'Track your Order', 'Exit']
         })
         .then(function (answer) {
 
-            if (answer.find === 'Look the Items') {
+            if (answer.menu === 'Look the Items') {
                 amazonDataBase();
-            } else if (answer.postOrBid === "BID") {
-                bidAuction();
-            } else {
+            } else if (answer.menu === "Place an Order") {
+                placeAnOrder();
+            } else if (answer.menu === 'Track your Order') {
+                trackYourOerder();
+            } else if (answer.menu === 'Exit') {
                 connection.end();
             }
         });
@@ -50,7 +52,33 @@ function amazonDataBase() {
                 res[i].stock_quantity);
         }
         console.log("------------------------------------------------------");
-        purchase();
+        menu();
 
     });
+}
+function placeAnOrder() {
+    inquirer
+        .prompt([
+            {
+                name: "item",
+                type: "input",
+                message: "What is the item ID you would like to purchase?"
+            },
+            {
+                name: "quantity",
+                type: "input",
+                message: "How many units of the product you would like to purchase?",
+            }
+        ])
+        .then(function (answer) {
+
+            connection.query("SELECT item_id FROM products", function (err, res) {
+                if (err) throw err;
+                console.log(res);
+                connection.end();
+            });
+
+
+
+        });
 }
