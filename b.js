@@ -71,10 +71,21 @@ function placeAnOrder() {
             }
         ])
         .then(function (answer) {
+            // answer = {
+            //     item,
+            //     quantity
+            // }
 
+            // SELECT * FROM products where item_id = ?, [answer.item];
+            // SELECT * FROM products where item_id = 1;
             connection.query("SELECT * FROM products where ?", [{ item_id: answer.item }], function (err, res) {
+
+
+
+
+
                 if (err) throw err;
-                // console.log(res);
+                console.log(res);
                 updateQuantity(res[0], answer.quantity)
             });
 
@@ -84,6 +95,9 @@ function placeAnOrder() {
 
 }
 function updateQuantity(res, quantity) {
+    console.log(res, quantity);
+    console.log(res.item_id);
+    console.log(res.stock_quantity);
 
     var query = connection.query(
         "UPDATE products SET ? WHERE ?",
@@ -98,6 +112,8 @@ function updateQuantity(res, quantity) {
         function (err, res) {
             if (err) throw err;
             console.log(res.affectedRows + " products updated!\n");
+            // Call deleteProduct AFTER the UPDATE completes
+
         }
     );
     console.log(query.sql);

@@ -11,7 +11,7 @@ var connection = mysql.createConnection({
 
 connection.connect(function (err) {
     if (err) throw err;
-    console.log("connected as id " + connection.threadId);
+    // console.log("connected as id " + connection.threadId);
     menu();
 });
 
@@ -51,7 +51,7 @@ function amazonDataBase() {
                 res[i].price + " | " +
                 res[i].stock_quantity);
         }
-        console.log("------------------------------------------------------");
+        console.log("------------------------------------------------------\n");
         menu();
 
     });
@@ -63,42 +63,40 @@ function placeAnOrder() {
                 name: "item",
                 type: "input",
                 message: "What is the item ID you would like to purchase?"
-            },
-            {
+            }, {
                 name: "quantity",
                 type: "input",
                 message: "How many units of the product you would like to purchase?",
-            }
-        ])
+            }])
         .then(function (answer) {
-
             connection.query("SELECT * FROM products where ?", [{ item_id: answer.item }], function (err, res) {
-                if (err) throw err;
-                // console.log(res);
-                updateQuantity(res[0], answer.quantity)
+
+                if (res[0].stock_quantity !== 0) {
+
+                    var totalPrice = res[0].price * answer.quantity;
+                    updateQuantity(res[0], answer.quantity);
+                    console.log("---------------------------------------------------\n");
+                    console.log("Your Order of " + res[0].product_name + " have been placed. The total price is $" + totalPrice + "\n");
+                    console.log("---------------------------------------------------\n");
+                    menu()
+                } else {
+                    console.log("---------------------------------------------------\n");
+                    console.log("Sorry, this product " + res[0].product_name + " is Outof stock! Shose another item \n");
+                    console.log("---------------------------------------------------\n");
+                    menu()
+                } if (err) throw err;
             });
-
-
-
         });
-
 }
-function updateQuantity(res, quantity) {
 
-    var query = connection.query(
-        "UPDATE products SET ? WHERE ?",
-        [
-            {
-                "stock_quantity": (parseInt(res.stock_quantity) - parseInt(quantity))
-            },
-            {
-                "item_id": res.item_id
-            }
-        ],
+function updateQuantity(res, quantity) {
+    connection.query("UPDATE products SET ? WHERE ?", [
+        {
+            stock_quantity: (parseInt(res.stock_quantity) - parseInt(quantity))
+        }, { item_id: res.item_id }],
+
         function (err, res) {
             if (err) throw err;
-            console.log(res.affectedRows + " products updated!\n");
         }
     );
-    console.log(query.sql);
 }
