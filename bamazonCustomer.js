@@ -21,7 +21,7 @@ function menu() {
             name: "menu",
             type: "list",
             message: "Main Menu",
-            choices: ['Look the Items', 'Place an Order', 'Track your Order', 'Exit']
+            choices: ['Look the Items', 'Place an Order', 'Exit']
         })
         .then(function (answer) {
 
