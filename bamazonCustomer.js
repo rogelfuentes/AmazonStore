@@ -29,8 +29,6 @@ function menu() {
                 amazonDataBase();
             } else if (answer.menu === "Place an Order") {
                 placeAnOrder();
-            } else if (answer.menu === 'Track your Order') {
-                trackYourOerder();
             } else if (answer.menu === 'Exit') {
                 connection.end();
             }
